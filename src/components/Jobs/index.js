@@ -45,22 +45,11 @@ const salaryRangesList = [
   },
 ]
 const locations = [
-  {label:'hyderabad',
-  location:'HYDERABAD'
-  },
-  {label:'banglore',
-  location:'BANGLORE'
-  },
-  {label:'mumbai',
-  location:'MUMBAI'
-  },
-  {label:'delhi',
-  location:'DELHI'
-  },
-  {label:'chennai',
-  location:'CHENNAI'
-  },
-  
+  {label: 'Hyderabad', employmentLocationId: 'HYDERABAD'},
+  {label: 'Bangalore', employmentLocationId: 'BANGALORE'},
+  {label: 'Mumbai', employmentLocationId: 'MUMBAI'},
+  {label: 'Delhi', employmentLocationId: 'DELHI'},
+  {label: 'Chennai', employmentLocationId: 'CHENNAI'},
 ]
 const apiStatusConstants = {
   initial: 'INITIAL',
@@ -77,6 +66,7 @@ class Jobs extends Component {
     profileDetails: [],
     checkboxInputs: [],
     radioInput: '',
+    locationInput: [],
     apiJobStatus: apiStatusConstants.initial,
   }
 
@@ -87,10 +77,10 @@ class Jobs extends Component {
 
   getJobDetails = async () => {
     this.setState({apiJobStatus: apiStatusConstants.inProgress})
-    const {checkboxInputs, searchInput, radioInput} = this.state
-    //console.log(searchInput)
+    const {checkboxInputs, searchInput, radioInput, locationInput} = this.state
+    console.log(locationInput)
     const jwtToken = Cookies.get('jwt_token')
-    const apiUrl = `https://apis.ccbp.in/jobs?employment_type=${checkboxInputs}&minimum_package=${radioInput}&search=${searchInput}`
+    const apiUrl = `https://apis.ccbp.in/jobs?employment_type=${checkboxInputs}&minimum_package=${radioInput}&search=${searchInput}&location=${locationInput}`
     const options = {
       method: 'GET',
       headers: {
@@ -149,7 +139,6 @@ class Jobs extends Component {
 
   displayProfile = () => {
     const {profileDetails} = this.state
-    //console.log(profileDetails)
     const {name, profileImageUrl, shortBio} = profileDetails[0]
     return (
       <div className="profile-container">
@@ -160,30 +149,27 @@ class Jobs extends Component {
     )
   }
 
-  displayLoader = () => {
-    return (
-      <div className="loader-container" data-testid="loader">
-        <Loader type="ThreeDots" color="#ffffff" height="50" width="50" />
-      </div>
-    )
-  }
+  displayLoader = () => (
+    <div className="loader-container" data-testid="loader">
+      <Loader type="ThreeDots" color="#ffffff" height="50" width="50" />
+    </div>
+  )
 
   onClickProfileFailure = () => {
     this.getProfileDetails()
   }
 
-  displayProfileFailure = () => {
-    return (
-      <div className="profile-failure">
-        <button
-          className="profile-failure-btn"
-          onClick={this.onClickProfileFailure}
-        >
-          Retry
-        </button>
-      </div>
-    )
-  }
+  displayProfileFailure = () => (
+    <div className="profile-failure">
+      <button
+        type="button"
+        className="profile-failure-btn"
+        onClick={this.onClickProfileFailure}
+      >
+        Retry
+      </button>
+    </div>
+  )
 
   onRenderProfileDetails = () => {
     const {apiStatus} = this.state
@@ -224,6 +210,7 @@ class Jobs extends Component {
     return (
       <li className="each-check-box">
         <input
+          key={each.employmentTypeId}
           id={each.employmentTypeId}
           className="checkbox-input"
           type="checkbox"
@@ -237,8 +224,47 @@ class Jobs extends Component {
     )
   }
 
+  onChangeLocation = event => {
+    const {locationInput} = this.state
+    const inputInList = locationInput.filter(each => each === event.target.id)
+    if (inputInList.length === 0) {
+      this.setState(
+        prevState => ({
+          locationInput: [...prevState.locationInput, event.target.id],
+        }),
+        this.getJobDetails,
+      )
+    } else {
+      const filteredData = locationInput.filter(
+        each => each !== event.target.id,
+      )
+      this.setState({locationInput: filteredData}, this.getJobDetails)
+    }
+  }
+
+  renderCheckBoxLocationDetails = each => {
+    const {label} = each
+    return (
+      <li className="each-check-box">
+        <input
+          key={each.employmentLocationId}
+          id={each.employmentLocationId}
+          className="checkbox-input"
+          onChange={this.onChangeLocation}
+          type="checkbox"
+        />
+        <label
+          className="checkbox-label-text"
+          htmlFor={each.employmentLocationId}
+        >
+          {label}
+        </label>
+        <br />
+      </li>
+    )
+  }
+
   onChangeRadio = event => {
-    //console.log(event.target.id)
     this.setState({radioInput: event.target.id}, this.getJobDetails)
   }
 
@@ -247,6 +273,7 @@ class Jobs extends Component {
     return (
       <li className="each-check-box">
         <input
+          key={salaryRangeId}
           id={salaryRangeId}
           className="checkbox-input"
           type="radio"
@@ -286,36 +313,38 @@ class Jobs extends Component {
             alt="no jobs"
           />
           <h1>No Jobs Found</h1>
-          <p>We could not found any jobs. Try other Jobs</p>
+          <p>We could not find any jobs. Try other filters</p>
         </div>
       )
-    } else {
-      return jobsList.map(each => <EachJob key={each.id} jobDetails={each} />)
     }
+    return jobsList.map(each => <EachJob key={each.id} jobDetails={each} />)
   }
 
   onClickRetryJob = () => {
     this.getJobDetails()
   }
 
-  showJobFailureError = () => {
-    return (
-      <div className="job-failure-container">
-        <img
-          src="https://assets.ccbp.in/frontend/react-js/failure-img.png"
-          className="failure-img"
-          alt="failure view"
-        />
-        <h1 className="failure-heading">Oops! Something Went Wrong</h1>
-        <p className="failure-desc">
-          We cannot seem to find the page you are looking for
-        </p>
-        <button className="profile-failure-btn" onClick={this.onClickRetryJob}>
-          Retry
-        </button>
-      </div>
-    )
-  }
+  showJobFailureError = () => (
+    <div className="job-failure-container">
+      <img
+        src="https://assets.ccbp.in/frontend/react-js/failure-img.png"
+        className="failure-img"
+        alt="failure view"
+      />
+      <h1 className="failure-heading">Oops! Something Went Wrong</h1>
+      <p className="failure-desc">
+        We cannot seem to find the page you are looking for.
+      </p>
+      <button
+        type="button"
+        className="profile-failure-btn"
+        onClick={this.onClickRetryJob}
+      >
+        Retry
+      </button>
+    </div>
+  )
+
   renderjobDetails = () => {
     const {apiJobStatus} = this.state
     switch (apiJobStatus) {
@@ -332,7 +361,7 @@ class Jobs extends Component {
   }
 
   render() {
-    const {jobsList, apiStatus, searchInput} = this.state
+    const {searchInput} = this.state
 
     return (
       <>
@@ -348,6 +377,7 @@ class Jobs extends Component {
                 onChange={this.onChangeSearchInput}
                 onKeyDown={this.onEnterDetails}
               />
+              {/* eslint-disable-next-line */}
               <button
                 className="search-btn"
                 type="button"
@@ -361,22 +391,24 @@ class Jobs extends Component {
               {this.onRenderProfileDetails()}
             </div>
             <hr className="line" />
-            <p className="employement-heading">Type of Employment</p>
+            <h1 className="employement-heading">Type of Employment</h1>
             <ul className="check-box-container">
               {employmentTypesList.map(each =>
                 this.renderCheckBoxDetails(each),
               )}
             </ul>
             <hr className="line" />
-            <p className="employement-heading">Salary Range</p>
+            <h1 className="employement-heading">Salary Range</h1>
             <ul className="check-box-container">
               {salaryRangesList.map(each =>
                 this.renderRadioButtonsDetails(each),
               )}
             </ul>
-            <hr className='line'/>
-            <p className='employement-heading'>Location</p>
-
+            <hr className="line" />
+            <h1 className="employement-heading">Location</h1>
+            <ul className="check-box-container">
+              {locations.map(each => this.renderCheckBoxLocationDetails(each))}
+            </ul>
           </div>
           <div className="total-jobs-list-container">
             <div className="lg-search-container">
@@ -388,6 +420,7 @@ class Jobs extends Component {
                 onChange={this.onChangeSearchInput}
                 onKeyDown={this.onEnterDetails}
               />
+              {/* eslint-disable-next-line */}
               <button
                 className="search-btn"
                 type="button"

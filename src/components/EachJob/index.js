@@ -17,7 +17,7 @@ const EachJob = props => {
     rating,
     title,
   } = jobDetails
-  //console.log(jobDetails)
+
   return (
     <Link to={`/jobs/${id}`} className="link-item">
       <li className="each-job-item-container">

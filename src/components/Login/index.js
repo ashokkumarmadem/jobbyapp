@@ -51,8 +51,8 @@ class LoginPage extends Component {
   render() {
     const {username, password, showErrorMsg, errorMsg} = this.state
     const jwtToken = Cookies.get('jwt_token')
-    if (jwtToken !== undefined){
-      return <Redirect to='/'/>
+    if (jwtToken !== undefined) {
+      return <Redirect to="/" />
     }
     return (
       <div className="login-container">

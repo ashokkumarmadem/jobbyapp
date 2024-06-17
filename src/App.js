@@ -12,16 +12,14 @@ import JobItemDetails from './components/JobItemDetails'
 import './App.css'
 
 // Replace your code here
-const App = () => {
-  return (
-    <Switch>
-      <Route exact path="/login" component={LoginPage} />
-      <ProtectedRoute exact path="/" component={Home} />
-      <ProtectedRoute exact path="/jobs" component={Jobs} />
-      <ProtectedRoute exact path="/jobs/:id" component={JobItemDetails} />
-      <Route component={NotFound} />
-    </Switch>
-  )
-}
+const App = () => (
+  <Switch>
+    <Route exact path="/login" component={LoginPage} />
+    <ProtectedRoute exact path="/" component={Home} />
+    <ProtectedRoute exact path="/jobs" component={Jobs} />
+    <ProtectedRoute exact path="/jobs/:id" component={JobItemDetails} />
+    <Route component={NotFound} />
+  </Switch>
+)
 
 export default App

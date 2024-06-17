@@ -1,9 +1,8 @@
 import {Component} from 'react'
 import Cookies from 'js-cookie'
 import Loader from 'react-loader-spinner'
-import {BsStarFill} from 'react-icons/bs'
 import {IoLocationSharp} from 'react-icons/io5'
-import {BsFillBriefcaseFill} from 'react-icons/bs'
+import {BsFillBriefcaseFill, BsStarFill} from 'react-icons/bs'
 import {BiLinkExternal} from 'react-icons/bi'
 import Header from '../Header'
 import SimilarJob from '../SimilarJob'
@@ -22,45 +21,42 @@ class JobItemDetails extends Component {
     similarJobsData: [],
     apiStatus: apiStatusConstants.initial,
   }
+
   componentDidMount() {
     this.getJobItemDetails()
   }
 
-  getFormattedData = data => {
-    return {
-      companyLogoUrl: data.company_logo_url,
-      companyWebsiteUrl: data.company_website_url,
-      employmentType: data.employment_type,
-      id: data.id,
-      jobDescription: data.job_description,
-      title: data.title,
-      lifeAtCompany: {
-        description: data.life_at_company.description,
-        imageUrl: data.life_at_company.image_url,
-      },
-      location: data.location,
-      packagePerAnnum: data.package_per_annum,
-      rating: data.rating,
-      skills: data.skills.map(each => ({
-        imageUrl: each.image_url,
-        name: each.name,
-      })),
-    }
-  }
+  getFormattedData = data => ({
+    companyLogoUrl: data.company_logo_url,
+    companyWebsiteUrl: data.company_website_url,
+    employmentType: data.employment_type,
+    id: data.id,
+    jobDescription: data.job_description,
+    title: data.title,
+    lifeAtCompany: {
+      description: data.life_at_company.description,
+      imageUrl: data.life_at_company.image_url,
+    },
+    location: data.location,
+    packagePerAnnum: data.package_per_annum,
+    rating: data.rating,
+    skills: data.skills.map(each => ({
+      imageUrl: each.image_url,
+      name: each.name,
+    })),
+  })
 
-  getFormattedSimilarData = data => {
-    return {
-      similarJobs: data.map(each => ({
-        companyLogoUrl: each.company_logo_url,
-        employmentType: each.employment_type,
-        id: each.id,
-        jobDescription: each.job_description,
-        location: each.location,
-        rating: each.rating,
-        title: each.title,
-      })),
-    }
-  }
+  getFormattedSimilarData = data => ({
+    similarJobs: data.map(each => ({
+      companyLogoUrl: each.company_logo_url,
+      employmentType: each.employment_type,
+      id: each.id,
+      jobDescription: each.job_description,
+      location: each.location,
+      rating: each.rating,
+      title: each.title,
+    })),
+  })
 
   getJobItemDetails = async () => {
     this.setState({apiStatus: apiStatusConstants.inProgress})
@@ -101,7 +97,6 @@ class JobItemDetails extends Component {
       companyLogoUrl,
       companyWebsiteUrl,
       employmentType,
-      id,
       jobDescription,
       lifeAtCompany,
       location,
@@ -155,7 +150,11 @@ class JobItemDetails extends Component {
             <ul className="skill-list-container">
               {skills.map(each => (
                 <li key={each.id} className="skill-item">
-                  <img src={each.imageUrl} className="skill-image" alt="name" />
+                  <img
+                    src={each.imageUrl}
+                    className="skill-image"
+                    alt={each.name}
+                  />
                   <p className="skill-name">{each.name}</p>
                 </li>
               ))}
@@ -164,7 +163,11 @@ class JobItemDetails extends Component {
           <h1 className="life-text">Life at Company</h1>
           <div className="bottom-container">
             <p className="bottom-desc">{lifeAtCompany.description}</p>
-            <img src={lifeAtCompany.imageUrl} className="bottom-img" alt="" />
+            <img
+              src={lifeAtCompany.imageUrl}
+              className="bottom-img"
+              alt="life at company"
+            />
           </div>
         </div>
         <div className="similar-jobs-container">
@@ -193,35 +196,37 @@ class JobItemDetails extends Component {
     }
   }
 
-  getLoader = () => {
-    return (
-      <div className="loader-container" data-testid="loader">
-        <Loader type="ThreeDots" color="#ffffff" height="50" width="50" />
-      </div>
-    )
-  }
+  getLoader = () => (
+    <div className="loader-container" data-testid="loader">
+      <Loader type="ThreeDots" color="#ffffff" height="50" width="50" />
+    </div>
+  )
 
   onClickRetryJob = () => {
     this.getJobItemDetails()
   }
-  displayIFailureDetails = () => {
-    return (
-      <div className="job-failure-container">
-        <img
-          src="https://assets.ccbp.in/frontend/react-js/failure-img.png"
-          className="failure-img"
-          alt="failure view"
-        />
-        <h1 className="failure-heading">Oops! Something Went Wrong</h1>
-        <p className="failure-desc">
-          We cannot seem to find the page you are looking for
-        </p>
-        <button className="profile-failure-btn" onClick={this.onClickRetryJob}>
-          Retry
-        </button>
-      </div>
-    )
-  }
+
+  displayIFailureDetails = () => (
+    <div className="job-failure-container">
+      <img
+        src="https://assets.ccbp.in/frontend/react-js/failure-img.png"
+        className="failure-img"
+        alt="failure view"
+      />
+      <h1 className="failure-heading">Oops! Something Went Wrong</h1>
+      <p className="failure-desc">
+        We cannot seem to find the page you are looking for
+      </p>
+      <button
+        type="button"
+        className="profile-failure-btn"
+        onClick={this.onClickRetryJob}
+      >
+        Retry
+      </button>
+    </div>
+  )
+
   render() {
     return (
       <>

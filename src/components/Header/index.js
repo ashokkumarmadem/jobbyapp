@@ -45,7 +45,7 @@ const Header = props => {
         </Link>
       </div>
       <Link to="/jobs">
-        <button className="logout-button" onClick={onClickLogout}>
+        <button type="button" className="logout-button" onClick={onClickLogout}>
           Logout
         </button>
       </Link>
