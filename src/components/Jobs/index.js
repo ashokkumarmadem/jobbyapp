@@ -66,7 +66,7 @@ class Jobs extends Component {
     profileDetails: [],
     checkboxInputs: [],
     radioInput: '',
-    locationInput: [],
+    locationInput: '',
     apiJobStatus: apiStatusConstants.initial,
   }
 
@@ -225,21 +225,7 @@ class Jobs extends Component {
   }
 
   onChangeLocation = event => {
-    const {locationInput} = this.state
-    const inputInList = locationInput.filter(each => each === event.target.id)
-    if (inputInList.length === 0) {
-      this.setState(
-        prevState => ({
-          locationInput: [...prevState.locationInput, event.target.id],
-        }),
-        this.getJobDetails,
-      )
-    } else {
-      const filteredData = locationInput.filter(
-        each => each !== event.target.id,
-      )
-      this.setState({locationInput: filteredData}, this.getJobDetails)
-    }
+    this.setState({locationInput: event.target.value}, this.getJobDetails)
   }
 
   renderCheckBoxLocationDetails = each => {
@@ -249,9 +235,11 @@ class Jobs extends Component {
         <input
           key={each.employmentLocationId}
           id={each.employmentLocationId}
+          value={each.employmentLocationId}
           className="checkbox-input"
           onChange={this.onChangeLocation}
-          type="checkbox"
+          name="location"
+          type="radio"
         />
         <label
           className="checkbox-label-text"
